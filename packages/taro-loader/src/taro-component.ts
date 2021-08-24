@@ -16,7 +16,7 @@ export default function (this: webpack.loader.LoaderContext) {
   // raw is a placeholder loader to locate changed .vue resource
   const raw = path.join(__dirname, 'raw.js')
   const loaders = this.loaders
-  const thisLoaderIndex = loaders.findIndex(item => normalizePath(item.path).indexOf('@tarojs/taro-loader/lib/native-component') >= 0)
+  const thisLoaderIndex = loaders.findIndex(item => normalizePath(item.path).indexOf('@tarojs/taro-loader/lib/taro-component') >= 0)
   const componentPath = isNeedRawLoader
     ? `${raw}!${this.resourcePath}`
     : this.request.split('!').slice(thisLoaderIndex + 1).join('!')

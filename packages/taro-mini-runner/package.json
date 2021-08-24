@@ -1,6 +1,6 @@
 {
   "name": "@tarojs/mini-runner",
-  "version": "3.2.12-wxsq",
+  "version": "3.2.12",
   "description": "Mini app runner for taro",
   "main": "index.js",
   "scripts": {
@@ -44,10 +44,10 @@
     "@tarojs/plugin-platform-tt": "3.2.12",
     "@tarojs/plugin-platform-weapp": "3.2.12",
     "@tarojs/runner-utils": "3.2.12",
-    "@tarojs/runtime": "3.2.12-wxsq",
+    "@tarojs/runtime": "3.2.12",
     "@tarojs/shared": "3.2.12",
     "@tarojs/taro": "3.2.12",
-    "@tarojs/taro-loader": "3.2.12-wxsq",
+    "@tarojs/taro-loader": "3.2.12",
     "babel-loader": "8.2.1",
     "copy-webpack-plugin": "5.1.2",
     "css": "2.2.4",
