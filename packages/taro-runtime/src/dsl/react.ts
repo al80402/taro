@@ -515,3 +515,84 @@ export function createNativeComponentConfig (Component, react: typeof React, rea
 
   return config
 }
+
+/**
+ * 完整复制一份出来是为了后面方便调整
+ */
+export function createTaroComponentConfig (Component, react: typeof React, reactdom, componentConfig) {
+  R = react
+  ReactDOM = reactdom
+
+  const config = {
+    properties: {
+      props: {
+        type: null,
+        value: null,
+        observer (_newVal, oldVal) {
+          oldVal && this.component.forceUpdate()
+        }
+      }
+    },
+    created () {
+      initNativeComponentEntry(R, ReactDOM)
+    },
+    attached () {
+      setCurrent()
+      this.compId = getNativeCompId()
+      this.config = componentConfig
+      Current.app!.mount!(Component, this.compId, () => this)
+    },
+    ready () {
+      safeExecute(this.compId, 'onReady')
+    },
+    detached () {
+      Current.app!.unmount!(this.compId)
+    },
+    pageLifetimes: {
+      show () {
+        safeExecute(this.compId, 'onShow')
+      },
+      hide () {
+        safeExecute(this.compId, 'onHide')
+      }
+    },
+    methods: {
+      eh: eventHandler
+    }
+  }
+
+  function setCurrent () {
+    const pages = getCurrentPages()
+    const currentPage = pages[pages.length - 1]
+    if (Current.page === currentPage) return
+
+    Current.page = currentPage
+
+    const route = (currentPage as any).route || (currentPage as any).__route__
+    const router = {
+      params: currentPage.options || {},
+      path: addLeadingSlash(route),
+      onReady: '',
+      onHide: '',
+      onShow: ''
+    }
+    Current.router = router
+
+    if (!currentPage.options) {
+      // 例如在微信小程序中，页面 options 的设置时机比组件 attached 慢
+      Object.defineProperty(currentPage, 'options', {
+        enumerable: true,
+        configurable: true,
+        get () {
+          return this._optionsValue
+        },
+        set (value) {
+          router.params = value
+          this._optionsValue = value
+        }
+      })
+    }
+  }
+
+  return config
+}

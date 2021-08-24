@@ -120,6 +120,7 @@ export default class TaroMiniPlugin {
   /** 页面列表 */
   pages = new Set<IComponent>()
   components = new Set<IComponent>()
+  taroComponents = {};
   /** tabbar icon 图片路径列表 */
   tabBarIcons = new Set<string>()
   prerenderPages: Set<string>
@@ -288,17 +289,33 @@ export default class TaroMiniPlugin {
             })
           }
         } else if (module.miniType === META_TYPE.COMPONENT) {
-          const loaderName = isBuildPlugin ? '@tarojs/taro-loader/lib/native-component' : '@tarojs/taro-loader/lib/component'
-          if (!isLoaderExist(module.loaders, loaderName)) {
-            module.loaders.unshift({
-              loader: loaderName,
-              options: {
-                framework,
-                name: module.name,
-                prerender: this.prerenderPages.has(module.name),
-                runtimePath: this.options.runtimePath
-              }
-            })
+          if (this.taroComponents[module.name]) {
+            const loaderName = '@tarojs/taro-loader/lib/taro-component'
+            if (!isLoaderExist(module.loaders, loaderName)) {
+              printLog(processTypeEnum.COMPILE, '设置Taro组件Loader')
+              module.loaders.unshift({
+                loader: loaderName,
+                options: {
+                  framework,
+                  name: module.name,
+                  prerender: this.prerenderPages.has(module.name),
+                  runtimePath: this.options.runtimePath
+                }
+              })
+            }
+          } else {
+            const loaderName = isBuildPlugin ? '@tarojs/taro-loader/lib/native-component' : '@tarojs/taro-loader/lib/component'
+            if (!isLoaderExist(module.loaders, loaderName)) {
+              module.loaders.unshift({
+                loader: loaderName,
+                options: {
+                  framework,
+                  name: module.name,
+                  prerender: this.prerenderPages.has(module.name),
+                  runtimePath: this.options.runtimePath
+                }
+              })
+            }
           }
         }
       })
@@ -553,6 +570,23 @@ export default class TaroMiniPlugin {
       })
     ])
     this.getSubPackages(this.appConfig)
+    const components = this.appConfig.components || [];
+    this.taroComponents = {}
+    components.forEach(item => {
+      const pagePath = resolveMainFilePath(path.join(this.options.sourceDir, item), FRAMEWORK_EXT_MAP[framework])
+      // printLog(processTypeEnum.COMPILE, '发现Taro组件', `[${item}] ${this.getShowPath(pagePath)}`)
+      printLog(processTypeEnum.COMPILE, '发现Taro组件', `[${item}] ${pagePath}`)
+      const componentObj = {
+        name: item,
+        path: pagePath,
+        isNative: false,
+        stylePath: undefined,
+        templatePath: undefined
+      }
+      this.taroComponents[item] = componentObj;
+      this.components.add(componentObj)
+      this.compileFile(componentObj)
+    })
   }
 
   /**
@@ -658,7 +692,9 @@ export default class TaroMiniPlugin {
     const fileConfigPath = file.isNative ? this.replaceExt(filePath, '.json') : this.getConfigFilePath(filePath)
     const fileConfig = readConfig(fileConfigPath)
     const usingComponents = fileConfig.usingComponents
-
+    if (fileConfig.usingTaroComponents) {
+      Object.assign(usingComponents, fileConfig.usingTaroComponents)
+    }
     // 递归收集依赖的第三方组件
     if (usingComponents) {
       const componentNames = Object.keys(usingComponents)
