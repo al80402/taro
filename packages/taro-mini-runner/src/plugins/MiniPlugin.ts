@@ -290,7 +290,7 @@ export default class TaroMiniPlugin {
           }
         } else if (module.miniType === META_TYPE.COMPONENT) {
           if (this.taroComponents[module.name]) {
-            const loaderName = '@tarojs/taro-loader/lib/component'
+            const loaderName = '@tarojs/taro-loader/lib/taro-component'
             if (!isLoaderExist(module.loaders, loaderName)) {
               printLog(processTypeEnum.COMPILE, '设置Taro组件Loader')
               module.loaders.unshift({
