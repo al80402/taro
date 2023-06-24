@@ -83,7 +83,7 @@ interface ButtonProps extends StandardProps {
   /** 会话来源
    *
    * 生效时机：`open-type="contact"`
-   * @supported weapp
+   * @supported weapp, swan
    */
   sessionFrom?: string
 
@@ -91,7 +91,7 @@ interface ButtonProps extends StandardProps {
    *
    * 生效时机：`open-type="contact"`
    * @default 当前标题
-   * @supported weapp
+   * @supported weapp, swan
    */
   sendMessageTitle?: string
 
@@ -99,7 +99,7 @@ interface ButtonProps extends StandardProps {
    *
    * 生效时机：`open-type="contact"`
    * @default 当前标题
-   * @supported weapp
+   * @supported weapp, swan
    */
   sendMessagePath?: string
 
@@ -107,7 +107,7 @@ interface ButtonProps extends StandardProps {
    *
    * 生效时机：`open-type="contact"`
    * @default 截图
-   * @supported weapp
+   * @supported weapp, swan
    */
   sendMessageImg?: string
 
@@ -128,6 +128,7 @@ interface ButtonProps extends StandardProps {
   /** 显示会话内消息卡片
    *
    * 生效时机：`open-type="contact"`
+   * @supported weapp, swan
    * @default false
    */
   showMessageCard?: boolean
@@ -219,7 +220,7 @@ interface ButtonProps extends StandardProps {
 
   /** 获取用户手机号回调
    *
-   * 生效时机：`open-type="getphonenumber"`
+   * 生效时机：`open-type="getPhoneNumber"`
    * @supported weapp, alipay, swan, tt, jd
    */
   onGetPhoneNumber?: CommonEventFunction<ButtonProps.onGetPhoneNumberEventDetail>
@@ -234,7 +235,7 @@ interface ButtonProps extends StandardProps {
   /** 在打开授权设置页后回调
    *
    * 生效时机：`open-type="openSetting"`
-   * @supported weapp, swan, qq, jd
+   * @supported weapp, swan, tt, qq, jd
    */
   onOpenSetting?: CommonEventFunction<ButtonProps.onOpenSettingEventDetail>
 
@@ -444,8 +445,13 @@ declare namespace ButtonProps {
       /** 昵称 */
       nickName: string
 
-      /** 头像 */
+      /** 头像链接 */
       avatarUrl: string
+
+      /** 头像
+       * @supported alipay
+       */
+      avatar: string
 
       /** 性别 */
       gender: keyof Gender
@@ -514,6 +520,12 @@ declare namespace ButtonProps {
      * @see https://developers.weixin.qq.com/miniprogram/dev/framework/open-ability/share.html#%E4%BD%BF%E7%94%A8%E6%8C%87%E5%BC%95
      */
     code?: string
+
+    /**
+     * 签名信息，如果在开放平台后台配置了加签方式后有此字段
+     * @supported alipay
+     */
+    sign: string
   }
   interface onOpenSettingEventDetail {
     /* 打开授权设置页的调用状态 */
@@ -526,7 +538,7 @@ declare namespace ButtonProps {
 
 /** 按钮
  * @classification forms
- * @supported weapp, h5, rn, tt
+ * @supported weapp, alipay, swan, tt, qq, jd, h5, rn, harmony
  * @example_react
  * ```tsx
  * export default class PageButton extends Component {
@@ -595,6 +607,7 @@ declare namespace ButtonProps {
  *         <Button size='mini' type='primary'>按钮</Button>
  *         <Button size='mini' >按钮</Button>
  *         <Button size='mini' type='warn'>按钮</Button>
+ *         <Button openType='getPhoneNumber' onGetPhoneNumber="callback">按钮</Button>
  *       </View>
  *     )
  *   }
@@ -620,6 +633,7 @@ declare namespace ButtonProps {
  *     <button size="mini" type="primary">按钮</button>
  *     <button size="mini" >按钮</button>
  *     <button size="mini" type="warn">按钮</button>
+ *     <button open-type="getPhoneNumber" `@getphonenumber="callback">按钮</button>
  *   </view>
  * </template>
  *

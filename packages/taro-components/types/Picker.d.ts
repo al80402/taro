@@ -42,6 +42,10 @@ declare namespace PickerStandardProps {
     /** 省市区选择器 */
     region
   }
+  interface PickerText {
+    okText?: string
+    cancelText?: string
+  }
 }
 
 /** 普通选择器：mode = selector */
@@ -88,6 +92,12 @@ interface PickerSelectorProps extends PickerStandardProps {
    * @supported weapp, h5, rn
    */
   onChange: CommonEventFunction<PickerSelectorProps.ChangeEventDetail>
+
+  /**
+   * 用于替换组件内部文本
+   * @supported h5
+   */
+  textProps?: PickerStandardProps.PickerText
 }
 declare namespace PickerSelectorProps {
   interface ChangeEventDetail {
@@ -173,13 +183,13 @@ interface PickerTimeProps extends PickerStandardProps {
   value: string
 
   /**
-   * 仅当 mode = time|date 时有效，表示有效时间范围的开始，字符串格式为"hh:mm"
+   * 仅当 mode 为 "time" 或 "date" 时有效，表示有效时间范围的开始，字符串格式为"hh:mm"
    * @supported weapp, h5, rn
    */
   start?: string
 
   /**
-   * 仅当 mode = time|date 时有效，表示有效时间范围的结束，字符串格式为"hh:mm"
+   * 仅当 mode 为 "time" 或 "date" 时有效，表示有效时间范围的结束，字符串格式为"hh:mm"
    * @supported weapp, h5, rn
    */
   end?: string
@@ -210,13 +220,13 @@ interface PickerDateProps extends PickerStandardProps {
   value: string
 
   /**
-   * 仅当 mode = time|date 时有效，表示有效时间范围的开始，字符串格式为"hh:mm"
+   * 仅当 mode 为 "time" 或 "date" 时有效，表示有效时间范围的开始，字符串格式为"YYYY-MM-DD"
    * @supported weapp, h5, rn
    */
   start?: string
 
   /**
-   * 仅当 mode = time|date 时有效，表示有效时间范围的结束，字符串格式为"hh:mm"
+   * 仅当 mode 为 "time" 或 "date" 时有效，表示有效时间范围的结束，字符串格式为"YYYY-MM-DD"
    * @supported weapp, h5, rn
    */
   end?: string
@@ -261,13 +271,20 @@ interface PickerRegionProps extends PickerStandardProps {
    * @supported weapp, h5, rn
    * @default []
    */
-  value: string[]
+  value?: string[]
 
   /**
    * 可为每一列的顶部添加一个自定义的项
    * @supported weapp, h5, rn
    */
   customItem?: string
+
+  /**
+   * 选择器层级
+   * @supported weapp
+   * @default "region"
+   */
+  level?: keyof PickerRegionProps.Level
 
   /**
    * 自定义省市区数据
@@ -297,12 +314,25 @@ declare namespace PickerRegionProps {
     code: string
     postcode?: string
   }
+  interface Level {
+    /** 省级选择器 */
+    province
+
+    /** 市级选择器 */
+    city
+
+    /** 区级选择器 */
+    region
+
+    /** 街道选择器 */
+    'sub-district'
+  }
 }
 
 /**
  * 从底部弹起的滚动选择器
  * @classification forms
- * @supported weapp, h5, rn, swan, alipay, tt
+ * @supported weapp, swan, alipay, tt, h5, rn, harmony
  * @example_react
  * ```tsx
  * export default class PagePicker extends Component {

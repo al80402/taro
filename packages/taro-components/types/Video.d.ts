@@ -53,12 +53,13 @@ interface VideoProps extends StandardProps {
   muted?: boolean
 
   /** 指定视频初始播放位置
-   * @supported weapp, alipay, swan, qq, jd, h5, rn
+   * @supported weapp, alipay, swan, tt, qq, jd, h5, rn
    */
   initialTime?: number
 
   /** 在非全屏模式下，是否开启亮度与音量调节手势
    * @default false
+   * @supported weapp, swan, qq
    */
   pageGesture?: boolean
 
@@ -199,7 +200,7 @@ interface VideoProps extends StandardProps {
 
   /**
    * 是否显示锁屏按钮，仅在全屏时显示，锁屏后控制栏的操作
-   * @supported weapp
+   * @supported weapp, tt
    */
   showScreenLockButton?: boolean
 
@@ -346,6 +347,16 @@ interface VideoProps extends StandardProps {
    */
   preferredPeakBitRate?: number
 
+  /** 是否为直播源
+   * @supported weapp
+   */
+  isLive?: boolean
+
+  /** 清晰度，设置清晰度列表和默认播放的清晰度。切换清晰度按钮仅在全屏时展示，属性说明详见 Definition 类型说明。需要保证 src 和 definition 中有一个为必填，若同时设置了 src 和 definition，definition 优先级高于 src
+   * @supported tt
+   */
+  definition?: string
+
   /** 当开始/继续播放时触发 play 事件
    * @supported weapp, alipay, swan, tt, qq, jd, h5, rn
    */
@@ -417,7 +428,7 @@ interface VideoProps extends StandardProps {
   onFullScreenChange?: CommonEventFunction<VideoProps.onFullscreenChangeEventDetail>
 
   /** 切换 controls 显示隐藏时触发。
-   * @supported weapp
+   * @supported weapp, swan
    */
   onControlsToggle?: CommonEventFunction<VideoProps.onControlsToggleEventDetail>
 
@@ -526,6 +537,21 @@ interface VideoProps extends StandardProps {
    * @supported tt
    */
   onAdLoad?: CommonEventFunction
+
+  /** 用户选择投屏设备时触发 detail = { state: "success"/"fail" }
+   * @supported weapp
+   */
+  onCastingUserSelect?: CommonEventFunction
+
+  /** 投屏成功/失败时触发 detail = { type, state: "success"/"fail" }
+   * @supported weapp
+   */
+  onCastingStateChange?: CommonEventFunction
+
+  /** 投屏被中断时触发
+   * @supported weapp
+   */
+  onCastingInterrupt?: CommonEventFunction
 }
 declare namespace VideoProps {
   /** direction 的合法值 */
@@ -636,10 +662,8 @@ declare namespace VideoProps {
 }
 
 /** 视频。相关api：Taro.createVideoContext
- *
- * 备注：h5上因为没有测试，所以暂时写了“待定”，需要`Video`来确认。
  * @classification media
- * @supported weapp, h5, swan, alipay, tt
+ * @supported weapp, alipay, swan, tt, qq, jd, h5, rn, harmony
  * @example_react
  * ```tsx
  * export default class PageView extends Component {

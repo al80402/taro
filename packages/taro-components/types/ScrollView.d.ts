@@ -97,13 +97,13 @@ interface ScrollViewProps extends StandardProps {
   refresherTriggered?: boolean
 
   /** 启用 scroll-view 增强特性
-   * @supported weapp
+   * @supported weapp, swan
    * @default false
    */
   enhanced?: boolean
 
   /** iOS 下 scroll-view 边界弹性控制 (同时开启 enhanced 属性后生效)
-   * @supported weapp
+   * @supported weapp, swan
    * @default true
    */
   bounces?: boolean
@@ -158,6 +158,41 @@ interface ScrollViewProps extends StandardProps {
    */
   enablePassive?: string
 
+  /** 渲染模式
+   * list - 列表模式。只会渲染在屏节点，会根据直接子节点是否在屏来按需渲染，若只有一个直接子节点则性能会退化
+   * custom - 自定义模式。只会渲染在屏节点，子节点可以是 sticky-section list-view grid-view 等组件
+   * @supported weapp
+   * @default 'list'
+   */
+  type?: 'list' | 'custom'
+
+  /** 是否反向滚动。一般初始滚动位置是在顶部，反向滚动则是在底部。
+   * @supported weapp
+   * @default false
+   */
+  reverse?: boolean
+
+  /** 指定视口外渲染区域的距离，默认情况下视口外节点不渲染。指定 cache-extent 可优化滚动体验和加载速度，但会提高内存占用且影响首屏速度，可按需启用。
+   * @supported weapp
+   */
+  cacheExtent?: number
+
+  /** 只 scroll-into-view 到 cacheExtent 以内的目标节点，性能更佳
+   * @supported weapp
+   * @default false
+   */
+  scrollIntoViewWithinExtent?: boolean
+
+  /** 指定 scroll-into-view 目标节点在视口内的位置。
+   * start - 目标节点显示在视口开始处
+   * center - 目标节点显示在视口中间
+   * end - 目标节点显示在视口结束处
+   * nearest - 目标节点在就近的视口边缘显示，若节点已在视口内则不触发滚动
+   * @supported weapp
+   * @default 'start'
+   */
+  scrollIntoViewAlignment?: 'start' | 'center' | 'end' | 'nearest'
+
   /** 滚动到顶部/左边，会触发 scrolltoupper 事件
    * @supported weapp, alipay, swan, tt, qq, jd, h5, rn
    */
@@ -172,6 +207,16 @@ interface ScrollViewProps extends StandardProps {
    * @supported weapp, alipay, swan, tt, qq, jd, h5, rn
    */
   onScroll?: BaseEventOrigFunction<ScrollViewProps.onScrollDetail>
+
+  /** 滚动开始事件
+   * @supported weapp
+   */
+  onScrollStart?: BaseEventOrigFunction<ScrollViewProps.onScrollDetail>
+
+  /** 滚动结束事件
+   * @supported weapp
+   */
+  onScrollEnd?: BaseEventOrigFunction<ScrollViewProps.onScrollDetail>
 
   /** 自定义下拉刷新控件被下拉
    * @supported weapp
@@ -192,6 +237,11 @@ interface ScrollViewProps extends StandardProps {
    * @supported weapp
    */
   onRefresherAbort?: CommonEventFunction
+
+  /** 自定义下拉刷新即将触发刷新（拖动超过 refresher-threshold 时）的事件
+   * @supported weapp
+   */
+  onRefresherWillRefresh?: CommonEventFunction
 
   /** 滑动开始事件 (同时开启 enhanced 属性后生效)
    * @supported weapp
@@ -243,6 +293,7 @@ declare namespace ScrollViewProps {
     scrollWidth: number
     deltaX: number
     deltaY: number
+    isDrag?: boolean
   }
   interface onDragDetail {
     /** 横向滚动条位置 */
@@ -262,7 +313,7 @@ declare namespace ScrollViewProps {
  * H5 中 ScrollView 组件是通过一个高度（或宽度）固定的容器内部滚动来实现的，因此务必正确的设置容器的高度。例如: 如果 ScrollView 的高度将 body 撑开，就会同时存在两个滚动条（body 下的滚动条，以及 ScrollView 的滚动条）。
  * 微信小程序 中 ScrollView 组件如果设置 scrollX 横向滚动时，并且子元素为多个时（单个子元素时设置固定宽度则可以正常横向滚动），需要通过 WXSS 设置 `white-space: nowrap` 来保证元素不换行，并对 ScrollView 内部元素设置 `display: inline-block` 来使其能够横向滚动。
  * @classification viewContainer
- * @supported weapp, swan, alipay, tt, h5, rn
+ * @supported weapp, alipay, swan, tt, qq, jd, h5, rn, harmony
  * @example_react
  * ```tsx
  * export default class PageView extends Component {
